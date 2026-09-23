@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Explore EURO 2020 modelled exposures, match-day decompositions and match-to-background ratios.">
+<title>Matchday — EURO 2020 dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23121c29'/%3E%3Cpath d='M7 23V16M16 23V7M25 23V12' stroke='%23ff8a75' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="dashboard.css?v=cumulative-period">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Matchday dashboard"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>Matchday <em>/ EURO 2020</em></a>
+    <div class="top-actions">
+      <button class="button" id="export-data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4"/></svg><span class="export-label">Export data</span><span class="sr-only">Download match data as CSV</span></button>
+      <button class="button icon" id="theme-toggle" aria-label="Switch to light theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M19 5l-1.5 1.5m-11 11L5 19"/></svg></button>
+    </div>
+  </header>
+  <div class="page-head"><div><div class="eyebrow">Exposure intelligence</div><h1>The match effect.</h1></div><label class="period-select">Analysis window <select id="period"><option value="full">1 Jun – 1 Nov 2021</option><option value="euro">1 Jun – 30 Jul 2021</option><option value="matches">13 Jun – 11 Jul 2021</option><option value="custom" hidden>Custom window</option></select></label></div>
+  <section class="metrics" aria-label="Exposure summary">
+    <article class="metric"><div class="metric-heading"><span class="dot" style="--c:var(--match)"></span>With matches</div><div class="metric-main"><strong class="metric-value" id="total-with">119,720</strong></div><div class="metric-foot">Cumulative fitted exposures</div><div class="metric-period">1 Jun – 1 Nov 2021</div><svg class="metric-spark" id="spark-with" aria-hidden="true"></svg></article>
+    <article class="metric"><div class="metric-heading"><span class="dot" style="--c:var(--base)"></span>Without matches</div><div class="metric-main"><strong class="metric-value" id="total-without">35,314</strong></div><div class="metric-foot">Cumulative counterfactual exposures</div><div class="metric-period">1 Jun – 1 Nov 2021</div><svg class="metric-spark" id="spark-without" aria-hidden="true"></svg></article>
+    <article class="metric"><div class="metric-heading">Exposure difference</div><div class="metric-main"><strong class="metric-value" id="total-gap">84,406</strong><span class="pill" id="reduction">−70.50%</span></div><div class="metric-foot">Cumulative reduction without matches</div><div class="metric-period">1 Jun – 1 Nov 2021</div></article>
+  </section>
+  <div class="main-grid">
+    <section class="panel trajectory-panel" aria-labelledby="trend-title">
+      <div class="panel-header"><div><h2 id="trend-title">Exposure trajectory</h2><div class="panel-meta" id="window-label">1 June – 1 November 2021</div></div><div class="segments" aria-label="Exposure measure"><button data-view="daily" aria-pressed="true">Daily</button><button data-view="cumulative" aria-pressed="false">Cumulative</button></div></div>
+      <div class="chart-toolbar"><div class="legend"><button data-series="with" aria-pressed="true"><i class="swatch" style="--c:var(--match)"></i>With matches</button><button data-series="without" aria-pressed="true"><i class="swatch dash" style="--c:var(--base)"></i>Without matches</button></div><button class="button" id="play-tour" style="padding:5px 9px;min-height:29px;font-size:.73rem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg><span>Match tour</span></button></div>
+      <div class="chart-box" id="trend-chart"></div>
+      <div class="timeline-label"><span>Timeline zoom</span><span id="zoom-label">154 days</span></div><div class="timeline" id="timeline-chart"></div>
+      <nav class="match-ribbon" id="match-ribbon" aria-label="Select a match"></nav>
+    </section>
+    <aside class="panel spotlight" aria-label="Selected match">
+      <div class="spotlight-head"><div class="eyebrow" id="match-counter">Match 07 / 08</div><div class="stepper"><button class="button" id="previous-match" aria-label="Previous match">‹</button><button class="button" id="next-match" aria-label="Next match">›</button></div></div>
+      <div class="match-identity"><div class="large-flags" id="selected-flags"></div><h2 id="selected-name">England vs Denmark</h2><div class="match-caption" id="selected-date">7 July 2021 · Wednesday</div></div>
+      <div class="impact-summary"><div><div class="impact-number number" id="selected-ratio">2.54×</div><div class="impact-unit">Match / background</div></div><div class="ring-wrap"><svg viewBox="0 0 104 104" role="img" aria-label="Match share of fitted daily exposures"><circle cx="52" cy="52" r="43" fill="none" stroke="var(--base)" stroke-opacity=".25" stroke-width="7"/><circle id="share-arc" cx="52" cy="52" r="43" fill="none" stroke="var(--match)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 271"/></svg><div class="ring-center"><strong id="selected-share">71.8%</strong><span>of daily total</span></div></div></div>
+      <div class="component-summary">
+        <div class="component-line"><span><i class="dot" style="--c:var(--base)"></i>Baseline</span><strong id="selected-baseline"></strong></div>
+        <div class="component-line"><span><i class="dot" style="--c:var(--weekday)"></i>Weekday adjustment</span><strong id="selected-dow"></strong></div>
+        <div class="component-line"><span><i class="dot" style="--c:var(--match)"></i>Match component</span><strong id="selected-match"></strong></div>
+        <div class="component-line total"><span>Total fitted exposures</span><strong id="selected-total"></strong></div>
+      </div>
+      <div class="spotlight-footer"><span class="small-label">Components on the fitted trajectory</span><button class="button" id="focus-match">Zoom to match</button></div>
+    </aside>
+  </div>
+  <div class="lower-grid">
+    <section class="panel" aria-labelledby="compare-title">
+      <div class="compare-header"><h2 id="compare-title">Every match, decomposed</h2><label class="sr-only" for="match-order">Match order</label><select class="order-select" id="match-order"><option value="date">Match date</option><option value="ratio">Highest ratio</option><option value="match">Largest match effect</option></select></div>
+      <div class="comparison-head"><span>Match</span><span>Exposure components</span><span>Ratio</span></div>
+      <div class="comparison-body" id="comparison-body"></div>
+      <div class="comparison-legend legend"><span><i class="swatch" style="--c:var(--base)"></i>Baseline</span><span><i class="swatch" style="--c:var(--weekday)"></i>Weekday ±</span><span><i class="swatch" style="--c:var(--match)"></i>Match</span></div>
+    </section>
+    <section class="panel" aria-labelledby="map-title">
+      <div class="map-title"><h2 id="map-title">The impact map</h2><span class="tag">8 matches</span></div><div class="map-subtitle">Match vs baseline × DOW exposures</div>
+      <div class="scatter-box" id="scatter-chart"></div>
+      <div class="scatter-footer"><span class="line-example"></span><span>Match = baseline × DOW · ratio = 1</span></div>
+    </section>
+  </div>
+  <footer class="bottom-bar"><span>Modelled exposures · 2021</span><button id="open-table">View exact match data ↗</button></footer>
+</div>
+<div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+<div class="sr-only" id="status" aria-live="polite"></div>
+<dialog id="data-dialog"><div class="dialog-heading"><h2>Match data</h2><button class="button icon" id="close-table" aria-label="Close data table">×</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Baseline</th><th>Weekday ±</th><th>Match</th><th>Total</th><th>Ratio</th></tr></thead><tbody id="data-table"></tbody></table></div></dialog>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="data.js"></script><script src="dashboard.js?v=explicit-impact-map"></script>
+</body></html>
