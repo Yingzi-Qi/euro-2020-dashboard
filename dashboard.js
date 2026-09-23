@@ -1,7 +1,12 @@
 (() => {
   'use strict';
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-  const d3=window.d3, source=window.EURO_DATA;
+  const d3=window.d3;
+  const flags=[['gb-eng','hr','ENG','CRO'],['gb-eng','gb-sct','ENG','SCO'],['cz','gb-eng','CZE','ENG'],['gb-wls','dk','WAL','DEN'],['gb-eng','de','ENG','GER'],['ua','gb-eng','UKR','ENG'],['gb-eng','dk','ENG','DEN'],['it','gb-eng','ITA','ENG']];
+  const source=d3&&window.EURO_DAILY&&window.EURO_MATCHES?{
+    daily:d3.csvParse(window.EURO_DAILY).map(r=>[r.date,+r.total,+r.without_matches]),
+    matches:d3.csvParse(window.EURO_MATCHES).map((r,i)=>({date:r.date,name:r.match,baseline:+r.baseline,dow:+r.weekday_effect,background:+r.baseline+(+r.weekday_effect),match:+r.match_effect,total:+r.total,ratio:+r.ratio,flags:flags[i]}))
+  }:null;
   if(!d3||!source){$('#trend-chart').innerHTML='<div class="empty-chart">Charts could not load. Please reconnect and refresh.</div>';return;}
   const colors={with:'var(--match)',without:'var(--base)',baseline:'var(--base)',dow:'var(--weekday)',match:'var(--match)'};
   const format=d3.format(',.2f'),whole=d3.format(',.0f'),percent=d3.format('.2%'),shortDate=d3.utcFormat('%-d %b'),longDate=d3.utcFormat('%-d %B'),dayName=d3.utcFormat('%A');
@@ -114,7 +119,7 @@
   function buildRibbon(){$('#match-ribbon').innerHTML=matches.map(m=>'<button class="match-chip" data-index="'+m.index+'" aria-pressed="false" aria-label="'+m.name+', '+shortDate(m.x)+'"><span class="flag-pair">'+img(m.flags[0],m.flags[2])+img(m.flags[1],m.flags[3])+'</span><span class="short">'+m.flags[2]+'–'+m.flags[3]+'</span><span class="date">'+shortDate(m.x)+'</span></button>').join('');$$('.match-chip').forEach(b=>b.addEventListener('click',()=>{stopTour();selectMatch(+b.dataset.index);}));}
   function stopTour(){if(tourTimer){clearInterval(tourTimer);tourTimer=null;}$('#play-tour span').textContent='Match tour';$('#play-tour').setAttribute('aria-pressed','false');}
   function playTour(){if(tourTimer){stopTour();return;}setRange(0,daily.findIndex(d=>d.date==='2021-07-30'),'euro',true);selectMatch(0);$('#play-tour span').textContent='Pause tour';$('#play-tour').setAttribute('aria-pressed','true');let index=0;tourTimer=setInterval(()=>{index++;if(index>=matches.length){stopTour();return;}selectMatch(index);},2100);}
-  function exportData(){const keys=['date','name','baseline','dow','background','match','total','ratio'];const body=[['Date','Match','Baseline exposures','Weekday adjustment','Background exposures','Match exposures','Total fitted exposures','Match-to-background ratio'].join(','),...matches.map(m=>keys.map(k=>typeof m[k]==='string'?'"'+m[k].replaceAll('"','""')+'"':m[k]).join(','))].join('\r\n');const a=document.createElement('a'),url=URL.createObjectURL(new Blob([body],{type:'text/csv;charset=utf-8;'}));a.href=url;a.download='euro-2020-match-exposures.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function exportData(){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([window.EURO_MATCHES+'\n'],{type:'text/csv;charset=utf-8;'}));a.href=url;a.download='match_exposures.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   $('#data-table').innerHTML=matches.map(m=>'<tr><td>'+shortDate(m.x)+'</td><td>'+m.name+'</td><td>'+format(m.baseline)+'</td><td>'+d3.format('+,.2f')(m.dow)+'</td><td>'+format(m.match)+'</td><td>'+format(m.total)+'</td><td>'+percent(m.ratio)+'</td></tr>').join('');
   $$('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;sync();drawTrend(true);persist();}));
   $$('[data-series]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.series;if(state.visible[k]&&!state.visible[k==='with'?'without':'with'])return;state.visible[k]=!state.visible[k];sync();hideTip();drawTrend(true);}));
