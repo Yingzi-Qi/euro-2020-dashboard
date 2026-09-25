@@ -2,10 +2,10 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Explore EURO 2020 modelled exposures, match-day decompositions and match-to-background ratios.">
+<meta name="description" content="Compare EURO 2020 contacts and transmissions using the current count-scale fit, match-associated counts and match-to-background ratios.">
 <title>Matchday — EURO 2020 dashboard</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23121c29'/%3E%3Cpath d='M7 23V16M16 23V7M25 23V12' stroke='%23ff8a75' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="dashboard.css?v=cumulative-period">
+<link rel="stylesheet" href="dashboard.css?v=count-scale-tabs-1">
 </head>
 <body>
 <div class="shell">
@@ -16,29 +16,36 @@
       <button class="button icon" id="theme-toggle" aria-label="Switch to light theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M19 5l-1.5 1.5m-11 11L5 19"/></svg></button>
     </div>
   </header>
-  <div class="page-head"><div><div class="eyebrow">Exposure intelligence</div><h1>The match effect.</h1></div><label class="period-select">Analysis window <select id="period"><option value="full">1 Jun – 1 Nov 2021</option><option value="euro">1 Jun – 30 Jul 2021</option><option value="matches">13 Jun – 11 Jul 2021</option><option value="custom" hidden>Custom window</option></select></label></div>
-  <section class="metrics" aria-label="Exposure summary">
-    <article class="metric"><div class="metric-heading"><span class="dot" style="--c:var(--match)"></span>With matches</div><div class="metric-main"><strong class="metric-value" id="total-with">—</strong></div><div class="metric-foot">Cumulative fitted exposures</div><div class="metric-period">1 Jun – 1 Nov 2021</div><svg class="metric-spark" id="spark-with" aria-hidden="true"></svg></article>
-    <article class="metric"><div class="metric-heading"><span class="dot" style="--c:var(--base)"></span>Without matches</div><div class="metric-main"><strong class="metric-value" id="total-without">—</strong></div><div class="metric-foot">Cumulative counterfactual exposures</div><div class="metric-period">1 Jun – 1 Nov 2021</div><svg class="metric-spark" id="spark-without" aria-hidden="true"></svg></article>
-    <article class="metric"><div class="metric-heading">Exposure difference</div><div class="metric-main"><strong class="metric-value" id="total-gap">—</strong><span class="pill" id="reduction">—</span></div><div class="metric-foot">Cumulative reduction without matches</div><div class="metric-period">1 Jun – 1 Nov 2021</div></article>
+  <div class="page-head"><div><div class="eyebrow">Contacts &amp; transmissions</div><h1>The match effect.</h1></div><label class="period-select">Analysis window <select id="period"><option value="full">1 Jun – 21 Jul 2021</option><option value="euro">11 Jun – 11 Jul 2021</option><option value="matches">13 Jun – 11 Jul 2021</option><option value="custom" hidden>Custom window</option></select></label></div>
+  <nav class="outcome-tabs" role="tablist" aria-label="Outcome">
+    <button id="tab-contacts" role="tab" data-outcome="contacts" aria-selected="true" aria-controls="single-outcome">Contacts</button>
+    <button id="tab-transmissions" role="tab" data-outcome="transmissions" aria-selected="false" aria-controls="single-outcome" tabindex="-1">Transmissions</button>
+    <button id="tab-compare" role="tab" data-outcome="compare" aria-selected="false" aria-controls="compare-outcomes" tabindex="-1">Compare</button>
+  </nav>
+  <p class="data-context">England and Wales pooled · Contact events and estimated transmissions · Current count-scale refit</p>
+  <div id="single-outcome" role="tabpanel" aria-labelledby="tab-contacts">
+  <section class="metrics" aria-label="Outcome summary">
+    <article class="metric"><div class="metric-heading"><span class="dot" style="--c:var(--match)"></span>Fitted total</div><div class="metric-main"><strong class="metric-value" id="total-with">—</strong></div><div class="metric-foot">Cumulative fitted counts</div><div class="metric-period">1 Jun – 21 Jul 2021</div><svg class="metric-spark" id="spark-with" aria-hidden="true"></svg></article>
+    <article class="metric"><div class="metric-heading"><span class="dot" style="--c:var(--base)"></span>Background</div><div class="metric-main"><strong class="metric-value" id="total-without">—</strong></div><div class="metric-foot">Cumulative background counts</div><div class="metric-period">1 Jun – 21 Jul 2021</div><svg class="metric-spark" id="spark-without" aria-hidden="true"></svg></article>
+    <article class="metric"><div class="metric-heading">Match component</div><div class="metric-main"><strong class="metric-value" id="total-gap">—</strong><span class="pill" id="reduction">—</span></div><div class="metric-foot">Estimated match-associated counts</div><div class="metric-period">1 Jun – 21 Jul 2021</div></article>
   </section>
   <div class="main-grid">
     <section class="panel trajectory-panel" aria-labelledby="trend-title">
-      <div class="panel-header"><div><h2 id="trend-title">Exposure trajectory</h2><div class="panel-meta" id="window-label">1 June – 1 November 2021</div></div><div class="segments" aria-label="Exposure measure"><button data-view="daily" aria-pressed="true">Daily</button><button data-view="cumulative" aria-pressed="false">Cumulative</button></div></div>
-      <div class="chart-toolbar"><div class="legend"><button data-series="with" aria-pressed="true"><i class="swatch" style="--c:var(--match)"></i>With matches</button><button data-series="without" aria-pressed="true"><i class="swatch dash" style="--c:var(--base)"></i>Without matches</button></div><button class="button" id="play-tour" style="padding:5px 9px;min-height:29px;font-size:.73rem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg><span>Match tour</span></button></div>
+      <div class="panel-header"><div><h2 id="trend-title">Contact trajectory</h2><div class="panel-meta" id="window-label">1 June – 21 July 2021</div></div><div class="segments" aria-label="Time aggregation"><button data-view="daily" aria-pressed="true">Daily</button><button data-view="cumulative" aria-pressed="false">Cumulative</button></div></div>
+      <div class="chart-toolbar"><div class="legend"><span><i class="dot" style="--c:var(--text)"></i>Observed</span><button data-series="with" aria-pressed="true"><i class="swatch" style="--c:var(--match)"></i>Fitted total</button><button data-series="without" aria-pressed="true"><i class="swatch dash" style="--c:var(--base)"></i>Background</button></div><button class="button" id="play-tour" style="padding:5px 9px;min-height:29px;font-size:.73rem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg><span>Match tour</span></button></div>
       <div class="chart-box" id="trend-chart"></div>
-      <div class="timeline-label"><span>Timeline zoom</span><span id="zoom-label">154 days</span></div><div class="timeline" id="timeline-chart"></div>
+      <div class="timeline-label"><span>Timeline zoom</span><span id="zoom-label">51 days</span></div><div class="timeline" id="timeline-chart"></div>
       <nav class="match-ribbon" id="match-ribbon" aria-label="Select a match"></nav>
     </section>
     <aside class="panel spotlight" aria-label="Selected match">
       <div class="spotlight-head"><div class="eyebrow" id="match-counter">Match 07 / 08</div><div class="stepper"><button class="button" id="previous-match" aria-label="Previous match">‹</button><button class="button" id="next-match" aria-label="Next match">›</button></div></div>
       <div class="match-identity"><div class="large-flags" id="selected-flags"></div><h2 id="selected-name">England vs Denmark</h2><div class="match-caption" id="selected-date">7 July 2021 · Wednesday</div></div>
-      <div class="impact-summary"><div><div class="impact-number number" id="selected-ratio">—</div><div class="impact-unit">Match / background</div></div><div class="ring-wrap"><svg viewBox="0 0 104 104" role="img" aria-label="Match share of fitted daily exposures"><circle cx="52" cy="52" r="43" fill="none" stroke="var(--base)" stroke-opacity=".25" stroke-width="7"/><circle id="share-arc" cx="52" cy="52" r="43" fill="none" stroke="var(--match)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 271"/></svg><div class="ring-center"><strong id="selected-share">—</strong><span>of daily total</span></div></div></div>
+      <div class="impact-summary"><div><div class="impact-number number" id="selected-ratio">—</div><div class="impact-unit">Match / background</div></div><div class="ring-wrap"><svg viewBox="0 0 104 104" role="img" aria-label="Match share of fitted daily counts"><circle cx="52" cy="52" r="43" fill="none" stroke="var(--base)" stroke-opacity=".25" stroke-width="7"/><circle id="share-arc" cx="52" cy="52" r="43" fill="none" stroke="var(--match)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 271"/></svg><div class="ring-center"><strong id="selected-share">—</strong><span>of daily total</span></div></div></div>
       <div class="component-summary">
         <div class="component-line"><span><i class="dot" style="--c:var(--base)"></i>Baseline</span><strong id="selected-baseline"></strong></div>
         <div class="component-line"><span><i class="dot" style="--c:var(--weekday)"></i>Weekday adjustment</span><strong id="selected-dow"></strong></div>
         <div class="component-line"><span><i class="dot" style="--c:var(--match)"></i>Match component</span><strong id="selected-match"></strong></div>
-        <div class="component-line total"><span>Total fitted exposures</span><strong id="selected-total"></strong></div>
+        <div class="component-line total"><span>Total fitted counts</span><strong id="selected-total"></strong></div>
       </div>
       <div class="spotlight-footer"><span class="small-label">Components on the fitted trajectory</span><button class="button" id="focus-match">Zoom to match</button></div>
     </aside>
@@ -46,20 +53,28 @@
   <div class="lower-grid">
     <section class="panel" aria-labelledby="compare-title">
       <div class="compare-header"><h2 id="compare-title">Every match, decomposed</h2><label class="sr-only" for="match-order">Match order</label><select class="order-select" id="match-order"><option value="date">Match date</option><option value="ratio">Highest ratio</option><option value="match">Largest match effect</option></select></div>
-      <div class="comparison-head"><span>Match</span><span>Exposure components</span><span>Ratio</span></div>
+      <div class="comparison-head"><span>Match</span><span>Count components</span><span>Ratio</span></div>
       <div class="comparison-body" id="comparison-body"></div>
       <div class="comparison-legend legend"><span><i class="swatch" style="--c:var(--base)"></i>Baseline</span><span><i class="swatch" style="--c:var(--weekday)"></i>Weekday ±</span><span><i class="swatch" style="--c:var(--match)"></i>Match</span></div>
     </section>
     <section class="panel" aria-labelledby="map-title">
-      <div class="map-title"><h2 id="map-title">The impact map</h2><span class="tag">8 matches</span></div><div class="map-subtitle">Match vs baseline × DOW exposures</div>
+      <div class="map-title"><h2 id="map-title">The impact map</h2><span class="tag">8 matches</span></div><div class="map-subtitle">Match counts vs background counts</div>
       <div class="scatter-box" id="scatter-chart"></div>
       <div class="scatter-footer"><span class="line-example"></span><span>Match = baseline × DOW · ratio = 1</span></div>
     </section>
   </div>
-  <footer class="bottom-bar"><span>Modelled exposures · 2021</span><button id="open-table">View exact match data ↗</button></footer>
+  </div>
+  <section id="compare-outcomes" role="tabpanel" aria-labelledby="tab-compare" hidden>
+    <div class="compare-controls"><p id="compare-window"></p><label>Order <select class="order-select" id="compare-order"><option value="date">Match date</option><option value="contacts-ratio">Contact ratio</option><option value="transmissions-ratio">Transmission ratio</option><option value="contacts-count">Contact match counts</option><option value="transmissions-count">Transmission match counts</option></select></label></div>
+    <div class="compare-metrics" id="compare-metrics"></div>
+    <section class="panel compare-panel" aria-labelledby="ratio-bar-title"><div class="panel-header"><div><h2 id="ratio-bar-title">Match-to-background ratios</h2><p class="panel-meta">M / (B + D) · 1× means match counts equal background counts</p></div><div class="legend outcome-legend"><span><i class="dot contacts-dot"></i>Contacts</span><span><i class="dot transmissions-dot"></i>Transmissions</span></div></div><div id="ratio-bars" class="paired-bars"></div></section>
+    <section class="panel compare-panel" aria-labelledby="count-bar-title"><div class="panel-header"><div><h2 id="count-bar-title">Estimated match-associated counts</h2><p class="panel-meta" id="count-scale-note">Fixed M · both outcomes use the same count scale</p></div><label class="scale-control"><input type="checkbox" id="separate-scales">Separate count scales</label></div><div id="count-bars" class="paired-bars"></div></section>
+  </section>
+  <details class="method-note"><summary>How these counts and ratios are calculated</summary><p>Match counts M are estimated as observed minus the original fitted background on match dates. They are held fixed while a positive baseline × weekday model is fitted to the leftover counts by least squares on the count scale. They are estimates of match-day excess, not independently measured or proven causal match counts.</p><p>In the tables, D is the additive weekday adjustment: background = B + D; fitted total = B + D + M. Ratio = M / (B + D), not observed / background. Daily totals include all 11 England/Wales match dates; the match explorer and comparison show the eight selected matches. Contacts are contact events, not a count of unique exposed people. Background is a fitted reference, not a separately simulated no-match epidemic.</p></details>
+  <footer class="bottom-bar"><span>Current count-scale fit · 2021</span><button id="open-table">View exact match data ↗</button></footer>
 </div>
 <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
 <div class="sr-only" id="status" aria-live="polite"></div>
-<dialog id="data-dialog"><div class="dialog-heading"><h2>Match data</h2><button class="button icon" id="close-table" aria-label="Close data table">×</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Match</th><th>Baseline</th><th>Weekday ±</th><th>Match</th><th>Total</th><th>Ratio</th></tr></thead><tbody id="data-table"></tbody></table></div></dialog>
-<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="data.js?v=se4ir-discrete-001"></script><script src="dashboard.js?v=se4ir-discrete-001"></script>
+<dialog id="data-dialog"><div class="dialog-heading"><h2 id="table-title">Contact match data</h2><button class="button icon" id="close-table" aria-label="Close data table">×</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Outcome / match</th><th>Baseline</th><th>Weekday ±</th><th>Match</th><th>Total</th><th>M / (B+D)</th></tr></thead><tbody id="data-table"></tbody></table></div></dialog>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="data.js?v=count-scale-tabs-1"></script><script src="dashboard.js?v=count-scale-tabs-1"></script>
 </body></html>
